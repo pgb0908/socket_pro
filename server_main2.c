@@ -14,8 +14,8 @@ int main(int argc,char* argv[]){
 	char buffer[BUF_LEN];
 	char temp[20];
 	
-	if(argc != 2){
-		printf("check: %s [port]\n", argv[0]);
+	if(argc != 3){
+		printf("check:%s [ip] and [port]\n", argv[0]);
 		exit(0);
 	}
 
@@ -24,8 +24,9 @@ int main(int argc,char* argv[]){
 	memset(&serv_addr, 0x00, sizeof(serv_addr));
 
         serv_addr.sin_family = AF_INET;
-        serv_addr.sin_port = htons(atoi(argv[1]));
-        serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        serv_addr.sin_port = htons(atoi(argv[2]));
+        // serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
+        inet_pton(AF_INET, argv[1], &serv_addr.sin_addr);
 
 	//bind
 	if(bind(serv_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
@@ -54,7 +55,7 @@ int main(int argc,char* argv[]){
 		
 		while(read(cli_fd, buffer, 1024) > 0){
 			printf("client %s : %s", temp, buffer);
-			send(cli_fd, buffer,strlen(buffer), 0);
+			send(cli_fd, buffer,sizeof(buffer), 0);
 		}
 
 		close(cli_fd);
