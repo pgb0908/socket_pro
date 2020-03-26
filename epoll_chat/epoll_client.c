@@ -78,12 +78,14 @@ int main(void) {
 				fgets(buffer, BUF_SIZE, stdin);
 				if(!strcmp(buffer, "q\n") | !strcmp(buffer, "Q\n")){
 
+					epoll_ctl(ef_fd, EPOLL_CTL_DEL, STDIN_FILENO, &ep_ev);
+					epoll_ctl(ef_fd, EPOLL_CTL_DEL, fd, &ep_ev);
+					printf("Client close\n");
 					shutdown(fd, SHUT_WR);
+					close(fd);
 					exit(0);
 				}
 				write(fd, buffer, strlen(buffer));
-				//epoll_ctl(ef_fd, EPOLL_CTL_DEL, fd, &ep_ev);
-
 
 			}
 			// server --> client, show message, read
@@ -98,6 +100,7 @@ int main(void) {
 		}
 	}
 
+	printf("Client close\n");
 	close(fd);
 	return 0;
 }
